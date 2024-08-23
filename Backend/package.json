@@ -1,7 +1,9 @@
 {
   "name": "Backend",
   "scripts": {
-    "dev": "tsx watch src/index.ts"
+    "dev": "tsx watch src/index.ts",
+    "studio":"drizzle-kit studio",
+    "push":"drizzle-kit push "
   },
   "dependencies": {
     "@hono/node-server": "^1.12.1",
