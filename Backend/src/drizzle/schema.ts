@@ -38,11 +38,8 @@ export const users = pgTable(
   })
 );
 
-export const usersRelations = relations(users, ({ one, many }) => ({
-  verification_tokens: one(verification_tokens, {
-    fields: [users.id],
-    references: [verification_tokens.user_id],
-  }),
+export const usersRelations = relations(users, ({ many }) => ({
+  verification_tokens: many(verification_tokens),
   properties: many(properties),
   notification: many(notification),
 }));
@@ -53,7 +50,7 @@ export const verification_tokens = pgTable("verification_tokens", {
     .notNull()
     .references(() => users.id),
   token: varchar("token").notNull(),
-  expires_at: timestamp("expires_at"),
+  expires_at: timestamp("expires_at").notNull(),
   created_at: timestamp("updated_at").defaultNow(),
 });
 export const verificationRelations = relations(
@@ -226,3 +223,6 @@ export const notificationRelations = relations(notification, ({ one }) => ({
     references: [users.id],
   }),
 }));
+
+export type TSToken = typeof verification_tokens.$inferSelect;
+export type TIToken = typeof verification_tokens.$inferInsert;

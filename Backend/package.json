@@ -2,18 +2,25 @@
   "name": "Backend",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "studio":"drizzle-kit studio",
-    "push":"drizzle-kit push "
+    "studio": "drizzle-kit studio",
+    "push": "drizzle-kit push "
   },
   "dependencies": {
     "@hono/node-server": "^1.12.1",
     "@neondatabase/serverless": "^0.9.4",
+    "bcrypt": "^5.1.1",
     "dotenv": "^16.4.5",
     "drizzle-orm": "^0.33.0",
-    "hono": "^4.5.8"
+    "hono": "^4.5.8",
+    "uuid": "^10.0.0",
+    "valibot": "^0.38.0",
+    "ws": "^8.18.0"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
     "@types/node": "^20.11.17",
+    "@types/uuid": "^10.0.0",
+    "@types/ws": "^8.5.12",
     "drizzle-kit": "^0.24.0",
     "tsx": "^4.7.1"
   }
