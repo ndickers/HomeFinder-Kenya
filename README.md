@@ -1,3 +1,4 @@
+
 # **HomeFinder Kenya**
 
 Welcome to **HomeFinder Kenya** – a web application designed to help users easily find rental properties across Kenya. Whether you're searching for a new home or managing property listings, HomeFinder provides a seamless experience.
@@ -11,7 +12,6 @@ Welcome to **HomeFinder Kenya** – a web application designed to help users eas
 - [API Documentation](#api-documentation)
 - [User Roles](#user-roles)
 - [Contributing](#contributing)
-- [License](#license)
 
 ## **Project Overview**
 
@@ -98,6 +98,36 @@ HomeFinder Kenya is a platform that connects property seekers with available ren
    npm run dev
    ```
 
+## **API Documentation**
+
+### **User Authentication**
+
+- `POST /register`: Register a new user.
+- `POST /login`: Log in and receive a JWT token.
+- `POST /verify-email`: Verify a user's email with a token.
+
+### **Property Management**
+
+- `GET /properties`: Get all properties with filters.
+- `POST /properties`: Create a new property listing.
+- `PUT /properties/:id`: Update a property listing.
+- `DELETE /properties/:id`: Delete a property listing.
+
+### **Booking Management**
+
+- `POST /bookings`: Book a viewing for a property.
+- `GET /bookings`: Get all bookings for a user.
+
+### **Admin Activity Logs**
+
+- `GET /admin/logs`: Retrieve admin activity logs.
+
+## **User Roles**
+
+- **Admin:** Full control over the platform, including managing users, properties, and bookings.
+- **Agent:** Can manage property listings and confirm bookings.
+- **User:** Can search for properties, book viewings, and manage their profile.
+
 ## **Contributing**
 
 We welcome contributions to HomeFinder Kenya! To contribute:
@@ -107,4 +137,3 @@ We welcome contributions to HomeFinder Kenya! To contribute:
 3. Commit your changes (`git commit -m 'Add feature'`).
 4. Push to your branch (`git push origin feature/your-feature`).
 5. Open a Pull Request.
-
