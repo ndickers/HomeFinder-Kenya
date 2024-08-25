@@ -226,3 +226,6 @@ export const notificationRelations = relations(notification, ({ one }) => ({
 
 export type TSToken = typeof verification_tokens.$inferSelect;
 export type TIToken = typeof verification_tokens.$inferInsert;
+
+export type TSUser = typeof users.$inferSelect;
+export type TIUser = typeof users.$inferInsert;

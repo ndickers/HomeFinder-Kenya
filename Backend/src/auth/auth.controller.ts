@@ -11,7 +11,7 @@ import {
   registerUserService,
   updateUserOnVerified,
 } from "./auth.service";
-
+import jwt from "jsonwebtoken";
 const createUserSchema = v.object({
   full_name: v.string("Enter full_name"),
   email: v.pipe(
@@ -69,7 +69,7 @@ export async function Register(c: Context) {
       return c.json({ error: "Unable to register user" }, 404);
     }
   } catch (error) {
-    return c.json({ error }, 404);
+    return c.json({ error }, 500);
   }
 }
 
@@ -103,7 +103,7 @@ export async function verifyUser(c: Context) {
       return c.json({ error: "Server error" }, 404);
     }
   } catch (error) {
-    return c.json({ error }, 404);
+    return c.json({ error }, 500);
   }
 }
 
@@ -113,9 +113,9 @@ export async function resendVerificationToken(c: Context) {
     const getUser = await getOneUserServiceByEmail(email);
 
     if (getUser !== null) {
-      if (getUser[0].verified === "verified") {
+      if (getUser[0].account_status === "verified") {
         return c.json({ message: "User is already verified" });
-      } else if (getUser[0].verified === "banned") {
+      } else if (getUser[0].account_status === "banned") {
         return c.json({
           message: "This user is banned from using our platform",
         });
@@ -124,13 +124,13 @@ export async function resendVerificationToken(c: Context) {
       const expirationTime = new Date();
       expirationTime.setHours(expirationTime.getHours() + 1);
       const verificationDetails = {
-        user_id: getUser[0].userId,
+        user_id: getUser[0].id,
         token: token,
         expires_at: expirationTime,
       };
       const sendToken = await createResendToken(
         verificationDetails,
-        getUser[0].userId
+        getUser[0].id
       );
       if (sendToken !== null) {
         // send email
@@ -142,6 +142,56 @@ export async function resendVerificationToken(c: Context) {
       return c.json({ error: "Server error. unable to resend token" }, 404);
     }
   } catch (error) {
-    return c.json({ error }, 404);
+    return c.json({ error }, 500);
+  }
+}
+
+// sign in user
+const loginUserScheme = v.object({
+  email: v.pipe(
+    v.string("Enter email address"),
+    v.email("Invalid email address")
+  ),
+  password: v.string("Enter password"),
+});
+
+export async function loginUser(c: Context) {
+  const loginDetails = await c.req.json();
+  const result = v.safeParse(loginUserScheme, loginDetails, {
+    abortEarly: true,
+  });
+  if (!result.success) {
+    return c.json({ message: result.issues[0].message }, 404);
+  }
+
+  try {
+    const checkIfUserExist = await getOneUserServiceByEmail(
+      result.output.email
+    );
+    if (checkIfUserExist !== null) {
+      if (checkIfUserExist.length === 0) {
+        return c.json({ message: "User does not exist" }, 404);
+      }
+      const isPasswordCorrect = await bcrypt.compare(
+        result.output.password,
+        checkIfUserExist[0].password
+      );
+      if (isPasswordCorrect) {
+        // return token and user cdetails
+        const token = jwt.sign(
+          {
+            name: checkIfUserExist[0].full_name,
+            role: checkIfUserExist[0].role,
+          },
+          process.env.SECRET as string
+        );
+        const { password, account_status, ...user } = checkIfUserExist[0];
+        return c.json({ token, user });
+      } else {
+        return c.json({ message: "Incorrect password" }, 404);
+      }
+    }
+  } catch (error) {
+    return c.json({ error }, 500);
   }
 }

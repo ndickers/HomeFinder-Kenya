@@ -1,4 +1,4 @@
-import { TIToken } from "./../drizzle/schema";
+import { TIToken, TSUser } from "./../drizzle/schema";
 import db from "../drizzle/db";
 import { users, verification_tokens } from "../drizzle/schema";
 import { eq } from "drizzle-orm";
@@ -47,13 +47,7 @@ export async function getOneUserService(id: number) {
 }
 
 export async function getOneUserServiceByEmail(email: string) {
-  return db
-    .select({
-      verified: users.account_status,
-      userId: users.id,
-    })
-    .from(users)
-    .where(eq(users.email, email));
+  return db.select().from(users).where(eq(users.email, email));
 }
 
 export async function updateUserOnVerified(
