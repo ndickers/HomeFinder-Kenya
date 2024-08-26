@@ -41,6 +41,7 @@ export async function getOneUserService(id: number) {
   return db
     .select({
       verified: users.account_status,
+      userId: users.id,
     })
     .from(users)
     .where(eq(users.id, id));
@@ -56,6 +57,17 @@ export async function updateUserOnVerified(
   return await db
     .update(users)
     .set({ account_status: "verified" })
+    .where(eq(users.id, userId))
+    .returning({ id: users.id });
+}
+
+export async function updateUserPassword(
+  password: string,
+  userId: number
+): Promise<{ id: number }[] | null> {
+  return await db
+    .update(users)
+    .set({ password })
     .where(eq(users.id, userId))
     .returning({ id: users.id });
 }

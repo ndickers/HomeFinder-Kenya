@@ -1,4 +1,3 @@
-
 # **HomeFinder Kenya**
 
 Welcome to **HomeFinder Kenya** – a web application designed to help users easily find rental properties across Kenya. Whether you're searching for a new home or managing property listings, HomeFinder provides a seamless experience.
@@ -21,18 +20,14 @@ HomeFinder Kenya is a platform that connects property seekers with available ren
 
 - **User Authentication**
   - Secure registration and login with email verification.
-  
 - **Property Search**
   - Advanced search filters by location, price, property type, and amenities.
   - View properties in list or map view.
-  
 - **Property Listings**
   - Add and manage property listings with images and detailed descriptions.
   - Verified property status for trustworthy listings.
-  
 - **Booking System**
   - Schedule viewings and manage bookings.
-  
 - **Admin Dashboard**
   - Manage users, properties, and track admin activities.
 
