@@ -70,11 +70,18 @@ export const propertyType = pgEnum("property_type", [
   "studio",
 ]);
 
-export const propertyStatus = pgEnum("property-status", [
+export const propertyStatus = pgEnum("property_status", [
   "available",
   "unavailable",
   "pending",
 ]);
+
+export const priceType = pgEnum("price_type", [
+  "monthly",
+  "yearly",
+  "purchase",
+]);
+
 export const properties = pgTable("properties", {
   id: serial("id").primaryKey(),
   owner_id: integer("owner_id")
@@ -83,6 +90,7 @@ export const properties = pgTable("properties", {
   title: varchar("title").notNull(),
   description: text("description").notNull(),
   property_type: propertyType("property_type").notNull(),
+  price_type: priceType("price_type").notNull(),
   price: numeric("price").notNull(),
   address: varchar("address").notNull(),
   city: varchar("city").notNull(),
@@ -92,8 +100,8 @@ export const properties = pgTable("properties", {
   furnished: boolean("furnished").notNull(),
   listed_at: timestamp("listed_at").defaultNow(),
   updated_at: timestamp("updated_at").defaultNow(),
-  status: propertyStatus("status").default("available"),
-  verified: boolean("verified").notNull(),
+  property_status: propertyStatus("property_status").default("available"),
+  verified: boolean("verified").notNull().default(false),
 });
 export const propertiesRelations = relations(properties, ({ one, many }) => ({
   users: one(users, {
@@ -229,3 +237,6 @@ export type TIToken = typeof verification_tokens.$inferInsert;
 
 export type TSUser = typeof users.$inferSelect;
 export type TIUser = typeof users.$inferInsert;
+
+export type TSProperties = typeof properties.$inferSelect;
+export type TIProperties = typeof properties.$inferInsert;

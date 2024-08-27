@@ -2,6 +2,7 @@ import { TIToken, TSUser } from "./../drizzle/schema";
 import db from "../drizzle/db";
 import { users, verification_tokens } from "../drizzle/schema";
 import { eq } from "drizzle-orm";
+import { Context } from "hono";
 
 export interface TNewUser {
   full_name: string;
