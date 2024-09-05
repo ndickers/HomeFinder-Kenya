@@ -1,8 +1,11 @@
 import {
+  admin_activity_log,
   properties,
   property_photos,
+  TIAdminLogs,
   TIProperties,
   TSProperties,
+  users,
 } from "./../drizzle/schema";
 import db from "../drizzle/db";
 import { eq } from "drizzle-orm";
@@ -45,11 +48,16 @@ export async function serveAgentProperties(
 
 export async function createPropertyService(
   propertyDetails: any
-): Promise<{ id: number }[] | null> {
-  return db
-    .insert(properties)
-    .values(propertyDetails)
-    .returning({ id: properties.id });
+): Promise<
+  | { id: number; ownerId: number; propertyName: string; location: string }[]
+  | null
+> {
+  return db.insert(properties).values(propertyDetails).returning({
+    id: properties.id,
+    ownerId: properties.owner_id,
+    propertyName: properties.title,
+    location: properties.address,
+  });
 }
 
 export async function updatePropertyService(

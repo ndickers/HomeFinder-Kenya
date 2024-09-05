@@ -179,7 +179,7 @@ export const entityAction = pgEnum("entity_action", [
   "send_notification",
 ]);
 
-export const entityType = pgEnum("entity_type", [
+export const entityTypeLog = pgEnum("entity_type", [
   "property",
   "booking",
   "user",
@@ -197,8 +197,8 @@ export const admin_activity_log = pgTable("admin_activity_log", {
     .notNull()
     .references(() => users.id),
   entity_action: entityAction("entity_action"),
-  entity_type: entityType("entity_type"),
-  entity_id: numeric("entity_id").notNull(),
+  entity_type: entityTypeLog("entity_type"),
+  entity_id: integer("entity_id").notNull(),
   description: text("description").notNull(),
   created_at: timestamp("created_at").defaultNow(),
 });
@@ -221,7 +221,7 @@ export const notification = pgTable("notification", {
   message: text("message").notNull(),
   read_status: boolean("read_status").default(false).notNull(),
   entity_type: notificationEntityType("entity_type").notNull(),
-  entity_id: numeric("entity_id").notNull(),
+  entity_id: integer("entity_id").notNull(),
   created_at: timestamp("created_at").defaultNow(),
 });
 
@@ -240,3 +240,8 @@ export type TIUser = typeof users.$inferInsert;
 
 export type TSProperties = typeof properties.$inferSelect;
 export type TIProperties = typeof properties.$inferInsert;
+
+export type TSNotification = typeof notification.$inferSelect;
+export type TINotification = typeof notification.$inferInsert;
+
+export type TIAdminLogs = typeof admin_activity_log.$inferInsert;

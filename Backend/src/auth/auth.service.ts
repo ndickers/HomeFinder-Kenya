@@ -43,6 +43,7 @@ export async function getOneUserService(id: number) {
     .select({
       verified: users.account_status,
       userId: users.id,
+      role: users.role,
     })
     .from(users)
     .where(eq(users.id, id));

@@ -13,6 +13,7 @@
     "drizzle-orm": "^0.33.0",
     "hono": "^4.5.8",
     "jsonwebtoken": "^9.0.2",
+    "socket.io": "^4.7.5",
     "uuid": "^10.0.0",
     "valibot": "^0.38.0",
     "ws": "^8.18.0"
