@@ -118,7 +118,6 @@ export const property_photos = pgTable("property_photos", {
     .notNull()
     .references(() => properties.id),
   photo_url: text("photo_url").notNull(),
-  property_type: propertyType("property_type").notNull(),
   is_primary: boolean("is_primary").default(false).notNull(),
   created_at: timestamp("updated_at").defaultNow(),
 });
@@ -217,7 +216,9 @@ export const notificationEntityType = pgEnum("entity_type", [
 
 export const notification = pgTable("notification", {
   id: serial("id").primaryKey(),
-  user_id: integer("user_id").notNull(),
+  user_id: integer("user_id")
+    .notNull()
+    .references(() => users.id),
   message: text("message").notNull(),
   read_status: boolean("read_status").default(false).notNull(),
   entity_type: notificationEntityType("entity_type").notNull(),

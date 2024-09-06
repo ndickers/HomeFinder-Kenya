@@ -11,8 +11,10 @@ import { propertySchema } from "./validationpropertySchema";
 import { TIAdminLogs, TINotification, TIProperties } from "../drizzle/schema";
 import { createAdminLogs } from "../adminActivityLogs/logs.services";
 import { createNotificationService } from "../notification/notification.service";
+import type { Server as TSocketServer } from "socket.io";
 
 import { Server, Socket } from "socket.io";
+import { serveUsersOfSpecificLocation } from "../users/users.services";
 
 export function propertyNotificationHandler(io: Server, socket: Socket) {
   // Listen for property-related notifications
@@ -53,6 +55,7 @@ export async function getAgentProperties(c: Context) {
 }
 
 export async function createNewProperty(c: Context) {
+  const io = c.get("io") as TSocketServer;
   const propertyDetails = await c.req.json();
   const adminId = c.req.query("id") ? Number(c.req.query("id")) : undefined;
 
@@ -67,24 +70,29 @@ export async function createNewProperty(c: Context) {
       const propertyResult = await createPropertyService(result.output);
       if (propertyResult !== null) {
         if (propertyResult.length !== 0) {
-          //return c.json({ message: "Property created successfully" });
-
-          //add to notification
-          const notificationDetails: TINotification = {
+          //get users with location match
+          const userIds = await serveUsersOfSpecificLocation(
+            propertyResult[0].location
+          );
+          const notificationArray = userIds?.map((user) => ({
             message: `New ${propertyResult[0].propertyName} property was added around ${propertyResult[0].location} your location`,
-            user_id: propertyResult[0].ownerId,
+            user_id: user.id,
             entity_type: "property",
             entity_id: propertyResult[0].id,
-          };
-          const result = await createNotificationService(notificationDetails);
+          }));
+
+          //add notification send to all users in the db
+          const result = await createNotificationService(
+            notificationArray as TINotification[]
+          );
           if (result !== null) {
             if (result.length !== 0) {
-              //socket implementation for new notification
-              //////
-              /////
-              //////
-              // io.emit("notification", "New property was added");
-              return c.json({ message: "Property added successfull" });
+              //new property notification
+              io.to(propertyResult[0].location).emit(
+                "notification",
+                `New property was added around your location: ${propertyResult[0].location}`
+              );
+              return c.json({ message: "Property added successful" });
             }
           } else {
             return c.json(

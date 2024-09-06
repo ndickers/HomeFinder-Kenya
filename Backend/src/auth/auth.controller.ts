@@ -92,7 +92,7 @@ export async function verifyUser(c: Context) {
         return c.json({ error: "Invalid token" }, 404);
       }
     } else {
-      return c.json({ error: "Server error" }, 404);
+      return c.json({ error: "Server error" }, 500);
     }
   } catch (error) {
     return c.json({ error }, 500);
