@@ -46,6 +46,17 @@ export async function serveAgentProperties(
   });
 }
 
+export async function serveOneProperty(
+  id: number
+): Promise<TSProperties[] | null> {
+  return db.query.properties.findMany({
+    with: {
+      property_photos: true,
+    },
+    where: eq(properties.id, id),
+  });
+}
+
 export async function createPropertyService(
   propertyDetails: any
 ): Promise<

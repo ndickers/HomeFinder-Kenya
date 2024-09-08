@@ -1,5 +1,9 @@
 import { Context } from "hono";
-import { getUserNotificationService } from "./notification.service";
+import {
+  deleteNotificationService,
+  getUserNotificationService,
+  updateNotificationService,
+} from "./notification.service";
 
 export async function getUserNotification(c: Context) {
   const userId = Number(c.req.param("id"));
@@ -24,10 +28,36 @@ export async function getUserNotification(c: Context) {
 export async function updateNotificationToRead(c: Context) {
   const id = Number(c.req.param("id"));
   try {
-  } catch (error) {
+    const result = await updateNotificationService(id);
+    if (result !== null) {
+      if (result.length !== 0) {
+        return c.json({ message: "notification opened" });
+      } else {
+        return c.json({ message: "notification not found" }, 404);
+      }
+    }
     return c.json(
       { error: "Server error, unable to update notification read status" },
       500
     );
+  } catch (error) {
+    return c.json({ error }, 500);
+  }
+}
+
+export async function deleteNotification(c: Context) {
+  const id = Number(c.req.param("id"));
+
+  try {
+    const result = await deleteNotificationService(id);
+    if (result !== null) {
+      if (result.length !== 0) {
+        return c.json({ message: "Notification deleted successfully" });
+      }
+      return c.json({ message: "Notification does not exist" }, 404);
+    }
+    return c.json({ message: "unable to delete notification" }, 500);
+  } catch (error) {
+    return c.json({ error }, 500);
   }
 }

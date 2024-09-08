@@ -146,9 +146,8 @@ export const bookings = pgTable("bookings", {
     .notNull()
     .references(() => properties.id),
   booking_date: timestamp("booking_date").defaultNow(),
-  viewing_date: timestamp("viewing_date").defaultNow(),
+  viewing_date: timestamp("viewing_date"),
   status: bookingStatus("status").default("pending"),
-  created_at: timestamp("created_at").defaultNow(),
   updated_at: timestamp("updated_at").defaultNow(),
 });
 
@@ -244,5 +243,8 @@ export type TIProperties = typeof properties.$inferInsert;
 
 export type TSNotification = typeof notification.$inferSelect;
 export type TINotification = typeof notification.$inferInsert;
+
+export type TSBooking = typeof bookings.$inferSelect;
+export type TIBooking = typeof bookings.$inferInsert;
 
 export type TIAdminLogs = typeof admin_activity_log.$inferInsert;

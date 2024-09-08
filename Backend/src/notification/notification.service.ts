@@ -26,12 +26,11 @@ export async function getUserNotificationService(
 }
 
 export async function updateNotificationService(
-  id: number,
-  updateDetails: TINotification
-) {
+  id: number
+): Promise<{ id: number }[] | null> {
   return await db
     .update(notification)
-    .set(updateDetails)
+    .set({ read_status: true })
     .where(eq(notification.id, id))
     .returning({ id: notification.id });
 }

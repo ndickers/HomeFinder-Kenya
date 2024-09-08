@@ -5,12 +5,14 @@ import {
   createNewProperty,
   updateProperty,
   removeProperty,
+  getOneProperty,
 } from "./properties.controller";
 
 export const propertiesRoutes = new Hono();
 
 propertiesRoutes.get("/properties", getAllProperties);
 
+propertiesRoutes.get("/properties/:id", getOneProperty);
 propertiesRoutes.get("/properties/:id", getAgentProperties);
 
 propertiesRoutes.post("/properties", createNewProperty);

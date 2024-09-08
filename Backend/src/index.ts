@@ -5,6 +5,7 @@ import { serve } from "@hono/node-server";
 import { Server } from "socket.io";
 import "dotenv/config";
 import { notificationRoutes } from "./notification/notification.routes";
+import { bookingRoutes } from "./bookings/booking.routes";
 
 const app = new Hono();
 
@@ -24,6 +25,11 @@ io.on("connection", (socket) => {
     console.log(`user joined location room ${location}`);
   });
 
+  socket.on("agentRoom", (agent) => {
+    socket.join(agent);
+    console.log("agent connected");
+  });
+
   socket.on("disconnect", () => {
     console.log("Socket disconnected");
   });
@@ -37,5 +43,5 @@ app.use(async (c: Context, next: Next) => {
 app.route("/", authRoutes);
 app.route("/", notificationRoutes);
 app.route("/", propertiesRoutes);
-
+app.route("/", bookingRoutes);
 console.log(`Server is running on port ${process.env.PORT}`);

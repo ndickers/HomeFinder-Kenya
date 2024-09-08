@@ -6,6 +6,7 @@ import {
   createPropertyService,
   updatePropertyService,
   deletePropertyService,
+  serveOneProperty,
 } from "./properties.services";
 import { propertySchema } from "./validationpropertySchema";
 import { TIAdminLogs, TINotification, TIProperties } from "../drizzle/schema";
@@ -27,6 +28,21 @@ export function propertyNotificationHandler(io: Server, socket: Socket) {
 export async function getAllProperties(c: Context) {
   try {
     const result = await serveAllProperties();
+    if (result === null) {
+      return c.json({ error: "server error. Unable to get properties" }, 500);
+    }
+    return result.length === 0
+      ? c.json({ error: "No property found " }, 404)
+      : c.json({ result });
+  } catch (error) {
+    return c.json({ error }, 500);
+  }
+}
+
+export async function getOneProperty(c: Context) {
+  const propertyId = Number(c.req.param("id"));
+  try {
+    const result = await serveOneProperty(propertyId);
     if (result === null) {
       return c.json({ error: "server error. Unable to get properties" }, 500);
     }
