@@ -1,5 +1,6 @@
 {
   "name": "Backend",
+  "type": "commonjs",
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "studio": "drizzle-kit studio",
