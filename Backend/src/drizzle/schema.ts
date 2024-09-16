@@ -241,6 +241,9 @@ export type TIUser = typeof users.$inferInsert;
 export type TSProperties = typeof properties.$inferSelect;
 export type TIProperties = typeof properties.$inferInsert;
 
+export type TSPropertyPhotos = typeof property_photos.$inferSelect;
+export type TIPropertyPhotos = typeof property_photos.$inferInsert;
+
 export type TSNotification = typeof notification.$inferSelect;
 export type TINotification = typeof notification.$inferInsert;
 

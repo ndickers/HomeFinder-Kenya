@@ -6,6 +6,7 @@ import { Server } from "socket.io";
 import "dotenv/config";
 import { notificationRoutes } from "./notification/notification.routes";
 import { bookingRoutes } from "./bookings/booking.routes";
+import { propertyPhotosRoutes } from "./property_photos/photos.routes";
 
 const app = new Hono();
 
@@ -27,7 +28,12 @@ io.on("connection", (socket) => {
 
   socket.on("agentRoom", (agent) => {
     socket.join(agent);
-    console.log("agent connected");
+    console.log("agent joined the room");
+  });
+
+  socket.on("userRoom", (user) => {
+    socket.join(user);
+    console.log("user joined the room");
   });
 
   socket.on("disconnect", () => {
@@ -44,4 +50,5 @@ app.route("/", authRoutes);
 app.route("/", notificationRoutes);
 app.route("/", propertiesRoutes);
 app.route("/", bookingRoutes);
+app.route("/", propertyPhotosRoutes);
 console.log(`Server is running on port ${process.env.PORT}`);

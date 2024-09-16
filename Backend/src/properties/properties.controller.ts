@@ -13,17 +13,7 @@ import { TIAdminLogs, TINotification, TIProperties } from "../drizzle/schema";
 import { createAdminLogs } from "../adminActivityLogs/logs.services";
 import { createNotificationService } from "../notification/notification.service";
 import type { Server as TSocketServer } from "socket.io";
-
-import { Server, Socket } from "socket.io";
 import { serveUsersOfSpecificLocation } from "../users/users.services";
-
-export function propertyNotificationHandler(io: Server, socket: Socket) {
-  // Listen for property-related notifications
-  socket.on("new-property-notification", (data) => {
-    // Emit the notification to all connected clients
-    io.emit("new-property-notification", data);
-  });
-}
 
 export async function getAllProperties(c: Context) {
   try {
@@ -73,6 +63,8 @@ export async function getAgentProperties(c: Context) {
 export async function createNewProperty(c: Context) {
   const io = c.get("io") as TSocketServer;
   const propertyDetails = await c.req.json();
+
+  //admin can also create property for agent
   const adminId = c.req.query("id") ? Number(c.req.query("id")) : undefined;
 
   const result = v.safeParse(propertySchema, propertyDetails, {
@@ -148,8 +140,10 @@ export async function createNewProperty(c: Context) {
   }
 }
 
+//add user can also cancel booking and notify user
 export async function updateProperty(c: Context) {
   const id = Number(c.req.param("id"));
+  //admin can updates property for the user
   const adminId = c.req.query("id") ? Number(c.req.query("id")) : undefined;
   const updateDetails = await c.req.json();
   try {

@@ -3,6 +3,7 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "studio": "drizzle-kit studio",
+    "build": "tsc",
     "push": "drizzle-kit push "
   },
   "dependencies": {

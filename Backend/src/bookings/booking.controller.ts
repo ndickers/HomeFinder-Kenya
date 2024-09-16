@@ -1,7 +1,12 @@
 import { TIAdminLogs, TINotification } from "./../drizzle/schema";
 import { Context } from "hono";
 import * as v from "valibot";
-import { createBookingService, updateBookingService } from "./booking.service";
+import {
+  createBookingService,
+  deleteBookingService,
+  serveUserBooking,
+  updateBookingService,
+} from "./booking.service";
 import { createAdminLogs } from "../adminActivityLogs/logs.services";
 import { serveOneProperty } from "../properties/properties.services";
 import { createNotificationService } from "../notification/notification.service";
@@ -99,11 +104,13 @@ export async function updateBooking(c: Context) {
   //when agent confirm the booking date, user should be notified
 
   try {
+    //user updates booking date
     if (updateDetails.viewing_date !== undefined) {
       const viewing_date = new Date(updateDetails.viewing_date);
 
       const result = await updateBookingService(bookingId, {
         viewing_date,
+        status: "pending",
       });
 
       if (result !== null) {
@@ -170,6 +177,90 @@ export async function updateBooking(c: Context) {
         return c.json({ message: "booking does not exist" }, 404);
       }
     }
+
+    // agent confirm booking date
+    if (updateDetails.status !== undefined) {
+      const result = await updateBookingService(bookingId, {
+        status: updateDetails.status,
+      });
+      if (result !== null) {
+        if (result.length !== 0) {
+          const notificationContent = [
+            {
+              user_id: result[0].userId,
+              message: `viewing date was ${updateDetails.status}`,
+              entity_type: "booking",
+              entity_id: result[0].propertyId,
+            },
+          ];
+          const newNotification = await createNotificationService(
+            notificationContent as TINotification[]
+          );
+          if (newNotification !== null) {
+            io.to(`user${result[0].userId}`).emit(
+              "notification",
+              `viewing date was ${updateDetails.status}`
+            );
+            if (adminId === undefined) {
+              return c.json({ message: "Booking status updated successfully" });
+            }
+            //save admin updates to log table
+
+            const adminLogs = {
+              admin_id: adminId,
+              entity_action: "update",
+              entity_type: "booking",
+              entity_id: result[0].propertyId,
+              description: `Admin of Id ${adminId} updated property of id ${result[0].id}`,
+            };
+            const logResult = await createAdminLogs(adminLogs as TIAdminLogs);
+            if (logResult !== null) {
+              if (logResult.length !== 0) {
+                return c.json({
+                  message: "log for booking, created successfully",
+                });
+              }
+            }
+            return c.json({ error: "Unable to create log for booking" }, 500);
+          }
+        }
+      } else {
+        return c.json({ error: "unable to update booking status" }, 500);
+      }
+    }
+  } catch (error) {
+    return c.json({ error }, 500);
+  }
+}
+
+export async function getUserBookings(c: Context) {
+  const userId = Number(c.req.param("id"));
+
+  try {
+    const result = await serveUserBooking(userId);
+    if (result !== null) {
+      if (result.length !== 0) {
+        return c.json({ result });
+      }
+      return c.json({ message: "Bookings not found" }, 404);
+    }
+    return c.json({ error: "Server error, unable to get bookings" }, 500);
+  } catch (error) {
+    return c.json({ error }, 500);
+  }
+}
+
+export async function deleteBooking(c: Context) {
+  const id = Number(c.req.param("id"));
+  try {
+    const result = await deleteBookingService(id);
+    if (result !== null) {
+      if (result.length !== 0) {
+        return c.json({ message: "Booking deleted successfully" });
+      }
+      return c.json({ messgae: "Booking not found" }, 404);
+    }
+    return c.json({ error: "Server error, unable to delete booking" }, 500);
   } catch (error) {
     return c.json({ error }, 500);
   }
