@@ -7,6 +7,8 @@ import "dotenv/config";
 import { notificationRoutes } from "./notification/notification.routes";
 import { bookingRoutes } from "./bookings/booking.routes";
 import { propertyPhotosRoutes } from "./property_photos/photos.routes";
+import { swaggerUI } from "@hono/swagger-ui";
+import { openAPISpec } from "./docs/openapi";
 
 const app = new Hono();
 
@@ -46,9 +48,18 @@ app.use(async (c: Context, next: Next) => {
   c.set("io", io);
   await next();
 });
+// ── API Documentation ──────────────────────────────────────────────────────
+// Serves the raw OpenAPI JSON spec at /doc
+app.get("/doc", (c) => c.json(openAPISpec));
+
+// Serves the interactive Swagger UI at /docs
+app.get("/docs", swaggerUI({ url: "/doc" }));
+// ──────────────────────────────────────────────────────────────────────────
+
 app.route("/", authRoutes);
 app.route("/", notificationRoutes);
 app.route("/", propertiesRoutes);
 app.route("/", bookingRoutes);
 app.route("/", propertyPhotosRoutes);
 console.log(`Server is running on port ${process.env.PORT}`);
+console.log(`📖 API Docs → http://localhost:${process.env.PORT}/docs`);
